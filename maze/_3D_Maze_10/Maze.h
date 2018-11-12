@@ -35,7 +35,7 @@ bool hasBackRightWall;
 
 void ResetMaze()
 {
-  youCol = 2;     //[1-14]
+  youCol = 1;     //[1-14]
   youRow = 6;   //[1-6]
   youDir = FacingNorth;
 }
