@@ -27,14 +27,20 @@ u8g_uint_t screenHeight = u8g.getHeight();
 u8g_uint_t screenHalfWidth, screenHalfHeight;
 
 // added for serial output
-void printInfo(String info, int pin) {
-  Serial.print("Pin");
-  Serial.print(pin);
-  Serial.print("has been called. Instruction:");
+void printInfo(String info, int pin)
+{
+  if (pin)
+  {
+    Serial.print("Pin");
+    Serial.print(pin);
+    Serial.print("has been called. ");
+  }
+  Serial.print("Instruction:");
   Serial.println(info);
 }
 
-void SetupButtons() {
+void SetupButtons()
+{
   pinMode(upPin, INPUT_PULLUP);
   pinMode(downPin, INPUT_PULLUP);
   pinMode(leftPin, INPUT_PULLUP);
@@ -45,12 +51,14 @@ void TurnLeft() { youRotDir = -1; }
 
 void TurnRight() { youRotDir = +1; }
 
-void Bump() {
+void Bump()
+{
   bumpCount = 3;
   vShift = 1;
 }
 
-void MoveForward() {
+void MoveForward()
+{
   if (youDir == 0 && youRow > 0 && !Look(youRow - 1, youCol))
     youRowDir = -1; // Facing North
   if (youDir == 1 && youCol < (mazeColMax - 1) && !Look(youRow, youCol + 1))
@@ -61,13 +69,15 @@ void MoveForward() {
     youColDir = -1; // Facing West
   if (youRowDir == 0 && youColDir == 0)
     Bump();
-  else {
+  else
+  {
     zoom = 0;
     zoomDir = +zoomSpeed;
   }
 }
 
-void MoveBackward() {
+void MoveBackward()
+{
   if (youDir == 0 && youRow < (mazeRowMax - 1) && !Look(youRow + 1, youCol))
     youRowDir = +1; // Facing North
   if (youDir == 1 && youCol > 0 && !Look(youRow, youCol - 1))
@@ -78,16 +88,20 @@ void MoveBackward() {
     youColDir = +1; // Facing West
   if (youRowDir == 0 && youColDir == 0)
     Bump();
-  else {
+  else
+  {
     zoom = hInset;
     zoomDir = -zoomSpeed;
   }
 }
 
-void AnimateTurningLeftRight() {
-  if (youRotDir != 0 && millis() > timeToMove) {
+void AnimateTurningLeftRight()
+{
+  if (youRotDir != 0 && millis() > timeToMove)
+  {
     hShift += turnSpeed;
-    if ((hShift <= 0) || (hShift >= screenWidth)) {
+    if ((hShift <= 0) || (hShift >= screenWidth))
+    {
       hShift = 0;
       youDir += youRotDir;
       if (youDir < 0)
@@ -100,10 +114,13 @@ void AnimateTurningLeftRight() {
   }
 }
 
-void AnimateWalkingForwardBackward() {
-  if (zoomDir != 0 && millis() > timeToMove) {
+void AnimateWalkingForwardBackward()
+{
+  if (zoomDir != 0 && millis() > timeToMove)
+  {
     zoom += zoomDir;
-    if (zoom >= hInset || zoom <= 0) {
+    if (zoom >= hInset || zoom <= 0)
+    {
       zoom = 0;
       zoomDir = 0;
       youRow += youRowDir;
@@ -114,45 +131,58 @@ void AnimateWalkingForwardBackward() {
   }
 }
 
-void AnimateBumpingIntoWall() {
-  if (bumpCount > 0 && millis() > timeToMove) {
-    if (--bumpCount == 0) {
+void AnimateBumpingIntoWall()
+{
+  if (bumpCount > 0 && millis() > timeToMove)
+  {
+    if (--bumpCount == 0)
+    {
+      printInfo("Bump into the wall", 0);
       vShift = 0;
-    } else {
+    }
+    else
+    {
       vShift = 1 - vShift;
     }
     timeToMove = millis() + 50;
   }
 }
 
-void Animate() {
+void Animate()
+{
   AnimateTurningLeftRight();
   AnimateWalkingForwardBackward();
   AnimateBumpingIntoWall();
 }
 
-void CheckButtons() {
+void CheckButtons()
+{
   if (youRowDir == 0 && youColDir == 0 &&
-      youRotDir == 0) { // Only allow movement if we're not moving/rotating
-    if (!digitalRead(leftPin)) {
+      youRotDir == 0)
+  { // Only allow movement if we're not moving/rotating
+    if (!digitalRead(leftPin))
+    {
       TurnLeft();
       printInfo("Turn left", leftPin);
       Blink(leftPin);
     }
 
-    if (!digitalRead(rightPin)) {
+    if (!digitalRead(rightPin))
+    {
       TurnRight();
       printInfo("Turn right", rightPin);
       Blink(rightPin);
     }
 
-    if (!digitalRead(upPin)) {
+    if (!digitalRead(upPin))
+    {
       MoveForward();
       printInfo("Move forward", upPin);
       Blink(upPin);
     }
 
-    if (!digitalRead(downPin)) {
+    if (!digitalRead(downPin))
+    {
       MoveBackward();
       printInfo("Move backward", downPin);
       Blink(downPin);
@@ -160,12 +190,16 @@ void CheckButtons() {
   }
 }
 
-void CheckEscape() {
-  // Only check escape when user is not moving
-  if (zoomDir == 0) {
+void CheckEscape()
+{
+  // Only check escape when player is not moving
+  if (zoomDir == 0)
+  {
     // Reached the end of maze
-    if (youRow == 0 || youRow == (mazeRowMax - 1) || youCol == 0 ||
-        youCol == (mazeColMax - 1)) {
+    if ((youRow == 0) || (youCol == 0) || (youRow == (mazeRowMax - 1))  ||
+        (youCol == (mazeColMax - 1)))
+    {
+      printInfo("CONGRATS !!",0);
       ResetMaze();
     }
   }

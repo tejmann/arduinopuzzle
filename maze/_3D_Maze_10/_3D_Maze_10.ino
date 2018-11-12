@@ -6,15 +6,16 @@
 
 void setup(void) {
   Serial.begin(9600);
+  ResetMaze();
   SetupButtons();
   InitiateLED();
 }
 
 void loop(void) {
-  //CheckEscape();
+  CheckEscape();
   CheckButtons();
   Animate();
-
+ 
   //update graphics
   
 }

@@ -9,8 +9,8 @@ void InitiateLED (){
 void Blink(int num){
     for(int i=0;i<num;++i){
         digitalWrite(ledPin,HIGH);
-        delay(300);
+        delay(100);
         digitalWrite(ledPin,LOW);
-        delay(200);
+        delay(100);
     }
 }
